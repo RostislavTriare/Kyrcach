@@ -1,46 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using System;
 
 namespace GaussCSharp
 {
     class Program
     {
-
-        static void Main(string[] args)
+        public static void Output(int row, double[,] Matrix, double[] RightPart)
         {
-            int SortIndex = 0;
-            int row; //Розмір матриці
-            Console.Write("Введiть розмiр: ");
-            row = int.Parse(Console.ReadLine());
-
-            double[,] Matrix = new double[row, row];
-            double[] RightPart = new double[row];
-            double[] Answer = new double[row];
-
-           //Ввод
-
-            Console.WriteLine("Введiть коефiцiєнти и свободнi членi: ");
-
-            for (int i = 0; i < row; i++)
-            {
-                for (int j = 0; j < row; j++)
-                {
-                    Console.Write($"A[{i + 1}][{j + 1}]= ");
-                    Matrix[i, j] = double.Parse(Console.ReadLine());
-                    
-                }
-                Console.Write($"B[{i + 1}]= ");
-                RightPart[i] = double.Parse(Console.ReadLine());
-                
-            }
-
-            //Вивод початкового виду 
-            Console.Clear();
-            Console.WriteLine("Початкова система рiвнянь");
             Console.WriteLine("────────────────────────────────────────────────────────");
             Console.WriteLine();
 
@@ -49,25 +14,44 @@ namespace GaussCSharp
                 for (int j = 0; j < row; j++)
                 {
                     if (Matrix[i, j] >= 0 && j != 0)
-                        Console.Write("{0, -1} {1, -4}", "+", $"{Matrix[i, j]}x");
+                        Console.Write("{0, -1} {1, -4}", "+", $"{Math.Round(Matrix[i, j]),3}x");
                     else if (Matrix[i, j] < 0)
-                        Console.Write("{0, -1} {1, -4}", "-", $"{Matrix[i, j] * (-1)}x");
+                        Console.Write("{0, -1} {1, -4}", "-", $"{Math.Round(Matrix[i, j] * (-1)),3}x");
                     else if (Matrix[i, j] >= 0 && j == 0)
-                        Console.Write("{0, -1} {1, -4}", " ", $"{Matrix[i, j]}x");
+                        Console.Write("{0, -1} {1, -4}", " ", $"{Math.Round(Matrix[i, j]),3}x");
                 }
-                Console.Write("{0, -1} {1, 3}", "=", $"{RightPart[i]}");
+                Console.Write("{0, -1} {1, 3}", "=", $"{Math.Round(RightPart[i]),3}");
                 Console.WriteLine();
             }
 
             Console.WriteLine();
             Console.WriteLine("────────────────────────────────────────────────────────");
+        }
+        public static void Input(int row, double[,] Matrix, double[] RightPart)
+        {
+            Console.WriteLine("Введiть коефiцiєнти и вiльнi члени: ");
 
-            //Кінець виводу 
+            for (int i = 0; i < row; i++)
+            {
+                for (int j = 0; j < row; j++)
+                {
+                    Console.Write($"A[{i + 1}][{j + 1}]= ");
+                    Matrix[i, j] = double.Parse(Console.ReadLine());
+
+                }
+                Console.Write($"B[{i + 1}]= ");
+                RightPart[i] = double.Parse(Console.ReadLine());
+
+            }
+        }
+
+
+        public static void Sort(int row, double[,] Matrix, double[] RightPart, int SortIndex, double MaxElement, int MaxElementIndex)
+        {
 
             //Пошук максимального елементу 1 стопчику(його значення та індекс)
 
-            double MaxElement = Matrix[SortIndex, SortIndex];
-            int MaxElementIndex = SortIndex;
+
             for (int i = SortIndex + 1; i < row; i++)
             {
                 if (Matrix[i, SortIndex] > MaxElement)
@@ -78,7 +62,7 @@ namespace GaussCSharp
             }
 
             //Тепер переносимо рядок з максимальним елементом 1 стопчика на гору
-            
+
             if (MaxElementIndex > SortIndex)// Якщо це не 1 елемент
             {
                 double Temp;
@@ -95,108 +79,14 @@ namespace GaussCSharp
                 }
                 Console.WriteLine($"Вибираємо рядок з максимальним коефiцiєнтом, a саме з a[0,{MaxElementIndex}]");
                 Console.WriteLine($"Та мiняєм його з першим рядком.");
-                Console.WriteLine("────────────────────────────────────────────────────────");
-                Console.WriteLine();
-
-                for (int i = 0; i < row; i++)
-                {
-                    for (int j = 0; j < row; j++)
-                    {
-                        if (Matrix[i, j] >= 0 && j != 0)
-                            Console.Write("{0, -1} {1, -4}", "+", $"{Matrix[i, j]}x");
-                        else if (Matrix[i, j] < 0)
-                            Console.Write("{0, -1} {1, -4}", "-", $"{Matrix[i, j] * (-1)}x");
-                        else if (Matrix[i, j] >= 0 && j == 0)
-                            Console.Write("{0, -1} {1, -4}", " ", $"{Matrix[i, j]}x");
-                    }
-                    Console.Write("{0, -1} {1, 3}", "=", $"{RightPart[i]}");
-                    Console.WriteLine();
-                }
-
-                Console.WriteLine();
-                Console.WriteLine("────────────────────────────────────────────────────────");
-
+                Output(row, Matrix, RightPart);
             }
 
-            for (int i = 0; i < row - 1; i++)
-            {
-
-                MaxElement = Matrix[i, i];
-                MaxElementIndex = i;
-                for (int n = i + 1; n < row; n++)
-                {
-                    if (Matrix[n, i] > MaxElement)
-                    {
-                        MaxElement = Matrix[n, i];
-                        MaxElementIndex = n;
-                    }
-
-                    for (int j = i + 1; j < row; j++)
-                    {
-                        if (Matrix[i, i] != 0) //якщо головний елемент не 0, то рахуємо
-                        {
-                            double MultElement = Matrix[j, i] / Matrix[i, i];
-                            double[,] Matrixx = new double[row, row];
-                            Matrixx[j, i] = Matrix[j, i];
-                            for (int k = i; k < row; k++)
-                            {
-                                double[,] Matrix2 = new double[row, row];
-                                Matrix2[j, k] = Matrix[j, k];
-                                Matrix[j, k] -= Matrix[i, k] * MultElement;
-                                RightPart[j] -= RightPart[i] * MultElement;
-                                Console.WriteLine($"step- Matrix[{j}, {k}] = {Math.Round(Matrix2[j, k]),3} - {Math.Round(Matrix[i, k]),3} * {Math.Round(Matrixx[j, i]),3} / {Math.Round(Matrix[i, i]),3} ");
-                                Console.WriteLine("────────────────────────────────────────────────────────");
-                                Console.WriteLine();
-
-                for (int l = 0; l < row; l++)
-                {
-                    for (int m = 0; m < row; m++)
-                    {
-                        if (Matrix[l, m] >= 0 && m != 0)
-                            Console.Write("{0, -1} {1, -4}", "+", $"{Math.Round(Matrix[l, m]),3}x");
-                        else if (Matrix[l, m] < 0)
-                            Console.Write("{0, -1} {1, -4}", "-", $"{Math.Round(Matrix[l, m] * (-1)),3}x");
-                        else if (Matrix[l, m] >= 0 && m == 0)
-                            Console.Write("{0, -1} {1, -4}", " ", $"{Math.Round(Matrix[l, m]),3}x");
-                    }
-                    Console.Write("{0, -1} {1, 3}", "=", $"{Math.Round(RightPart[l]),3}");
-                    Console.WriteLine();
-                }
-                Console.WriteLine("────────────────────────────────────────────────────────");
-            }
-                            }
-                            
-                            
-                        }
-                        
-                        //для нульового головного елемента пропускаємо цей крок
-                        
-                    }
-                    
-                }
-                
-            
+        }
+        public static void Answe(int row, double[,] Matrix, double[] RightPart, double[] Answer)
+        {
             Console.WriteLine("Кiнцева система рiвнянь");
-            Console.WriteLine("────────────────────────────────────────────────────────");
-            Console.WriteLine();
-
-            for (int i = 0; i < row; i++)
-            {
-                for (int j = 0; j < row; j++)
-                {
-                    if (Matrix[i, j] >= 0 && j != 0)
-                        Console.Write("{0, -1} {1, -4}", "+", $"{Math.Round(Matrix[i, j]),4}x");
-                    else if (Matrix[i, j] < 0)
-                        Console.Write("{0, -1} {1, -4}", "-", $"{Math.Round(Matrix[i, j] * (-1)),4}x");
-                    else if (Matrix[i, j] >= 0 && j == 0)
-                        Console.Write("{0, -1} {1, -4}", " ", $"{Math.Round(Matrix[i, j]),4}x");
-                }
-                Console.Write("{0, -1} {1, 3}", "=", $"{Math.Round(RightPart[i]),4}");
-                Console.WriteLine();
-            }
-
-            Console.WriteLine();
-            Console.WriteLine("────────────────────────────────────────────────────────");
+            Output(row, Matrix, RightPart);
 
             string AnswerStr = "";
             for (int i = (int)(row - 1); i >= 0; i--)
@@ -211,17 +101,17 @@ namespace GaussCSharp
                     if (RightPart[i] == 0)
                     {
                         AnswerStr = "1";
-                        Console.WriteLine("Ріщень нескінчено багато"); //множество решений
+                        Console.WriteLine("Рішень нескінчено багато"); 
                     }
                     else
                     {
                         AnswerStr = "1";
-                        Console.WriteLine("Немає рiшень"); //нет решения
+                        Console.WriteLine("Немає рiшень"); 
                     }
                 }
-                    Answer[i] /= Matrix[i, i];
+                Answer[i] /= Matrix[i, i];
 
-                
+
             }
 
 
@@ -236,6 +126,74 @@ namespace GaussCSharp
                 }
             }
             Console.WriteLine();
+        }
+        public static void Algorithm(int row, double[,] Matrix, double[] RightPart, double MaxElement, int MaxElementIndex)
+        {
+            for (int i = 0; i < row - 1; i++)
+            {
+                MaxElement = Matrix[i, i];
+                MaxElementIndex = i;
+                for (int n = i + 1; n < row; n++)
+                {                 
+                    if (Matrix[n, i] > MaxElement)
+                    {
+                        MaxElement = Matrix[n, i];
+                        MaxElementIndex = n;
+                    }
+                    for (int j = i + 1; j < row; j++)
+                    {                       
+                        if (Matrix[i, i] != 0) //якщо головний елемент не 0, то рахуємо
+                        {
+                            double MultElement = Matrix[j, i] / Matrix[i, i];
+                            double[,] Matrixx = new double[row, row];
+                            
+                            for (int k = i; k < row; k++)
+                            {
+                                Matrixx[j, i] = Matrix[j, i];
+                                double[,] Matrix2 = new double[row, row];
+                                Matrix2[j, k] = Matrix[j, k];
+                                Matrix[j, k] -= Matrix[i, k] * MultElement;
+                                Console.WriteLine($"Step - Matrix[{j}, {k}] = MyNumber - Element[{j-1},{k}] * Element[{j}, {i}] / Element[{i}, {i}] ");
+                                Output(row, Matrix, RightPart);
+                            }
+                            RightPart[j] -= RightPart[i] * MultElement;                       
+                        }
+                    }
+                   
+                }                       
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            int SortIndex = 0;
+            int row;
+
+            Console.Write("Введiть розмiр: ");
+            row = int.Parse(Console.ReadLine());
+
+            double[,] Matrix = new double[row, row];
+            double[] RightPart = new double[row];
+            double[] Answer = new double[row];
+
+            Input(row, Matrix, RightPart);
+
+            Console.Clear();
+            Console.WriteLine("Початкова система рiвнянь");
+
+            Output(row, Matrix, RightPart);
+
+            double MaxElement = Matrix[SortIndex, SortIndex];
+            int MaxElementIndex = SortIndex;
+
+            Sort(row, Matrix, RightPart, SortIndex, MaxElement, MaxElementIndex);
+
+
+            Algorithm(row, Matrix, RightPart, MaxElement, MaxElementIndex);
+
+
+
+            Answe(row, Matrix, RightPart, Answer);
             Console.Write("Для продолжения нажмите любую клавишу...");
             Console.ReadKey();
         }
